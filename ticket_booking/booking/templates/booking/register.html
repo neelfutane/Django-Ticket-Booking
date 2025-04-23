@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+    <style>
+        :root {
+            --primary: #3498db;
+            --success: #27ae60;
+            --danger: #e74c3c;
+            --text: #2c3e50;
+            --light-gray: #f5f5f5;
+            --border: #ddd;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-gray);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            line-height: 1.6;
+        }
+        
+        .register-container {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 450px;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        h1 {
+            color: var(--text);
+            text-align: center;
+            margin-bottom: 1.8rem;
+            font-size: 1.8rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        
+        input {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            box-sizing: border-box;
+        }
+        
+        input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+        }
+        
+        .password-container {
+            position: relative;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: var(--text);
+            opacity: 0.6;
+            font-size: 0.9rem;
+        }
+        
+        button {
+            width: 100%;
+            padding: 1rem;
+            background-color: var(--success);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 0.5rem;
+        }
+        
+        button:hover {
+            background-color: #219653;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(39, 174, 96, 0.2);
+        }
+        
+        .error-message {
+            color: var(--danger);
+            background-color: #fde8e8;
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--danger);
+            animation: shake 0.5s;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+        
+        .requirements {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            margin: -0.8rem 0 1rem 0.5rem;
+        }
+        
+        .login-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: var(--text);
+        }
+        
+        .login-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .strength-meter {
+            height: 4px;
+            background: #eee;
+            margin: 0.5rem 0 1rem;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .strength-meter::after {
+            content: '';
+            display: block;
+            height: 100%;
+            width: 0;
+            background: red;
+            transition: width 0.3s, background 0.3s;
+        }
+        
+        [data-strength="1"]::after { width: 25%; background: #e74c3c; }
+        [data-strength="2"]::after { width: 50%; background: #f39c12; }
+        [data-strength="3"]::after { width: 75%; background: #f1c40f; }
+        [data-strength="4"]::after { width: 100%; background: #27ae60; }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <h1>Create Your Account</h1>
+        
+        <form method="post" id="registerForm">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <input type="text" name="username" placeholder="Username" required 
+                       autocomplete="username" autocapitalize="off">
+            </div>
+            
+            <div class="form-group password-container">
+                <input type="password" name="password" id="password" 
+                       placeholder="Password" required autocomplete="new-password"
+                       pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}">
+                <span class="password-toggle" onclick="togglePassword('password')">Show</span>
+                <div class="strength-meter" id="strengthMeter"></div>
+                <div class="requirements">
+                    Must contain: 8+ chars, 1 uppercase, 1 lowercase, 1 number
+                </div>
+            </div>
+            
+            <div class="form-group password-container">
+                <input type="password" name="password_confirm" id="password_confirm" 
+                       placeholder="Confirm Password" required autocomplete="new-password">
+                <span class="password-toggle" onclick="togglePassword('password_confirm')">Show</span>
+            </div>
+            
+            <button type="submit">Register</button>
+        </form>
+        
+        {% if error %}
+            <div class="error-message">{{ error }}</div>
+        {% endif %}
+        
+        <div class="login-link">
+            Already have an account? <a href="{% url 'login' %}">Sign in</a>
+        </div>
+    </div>
+
+    <script>
+
+        function togglePassword(id) {
+            const input = document.getElementById(id);
+            const toggle = input.nextElementSibling;
+            if (input.type === 'password') {
+                input.type = 'text';
+                toggle.textContent = 'Hide';
+            } else {
+                input.type = 'password';
+                toggle.textContent = 'Show';
+            }
+        }
+
+        document.getElementById('password').addEventListener('input', function(e) {
+            const password = e.target.value;
+            const meter = document.getElementById('strengthMeter');
+            let strength = 0;
+            
+            if (password.length >= 8) strength++;
+            if (password.match(/[a-z]/)) strength++;
+            if (password.match(/[A-Z]/)) strength++; 
+            if (password.match(/[0-9]/)) strength++;
+            
+            meter.setAttribute('data-strength', strength);
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            const password = document.getElementById('password').value;
+            const confirm = document.getElementById('password_confirm').value;
+            
+            if (password !== confirm) {
+                e.preventDefault();
+                alert('Passwords do not match!');
+            }
+        });
+    </script>
+</body>
+</html>

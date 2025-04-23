@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Welcome to Ticket Booking</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        
+        .nav-links {
+            margin-bottom: 30px;
+        }
+        
+        .nav-links a {
+            display: inline-block;
+            padding: 8px 16px;
+            margin-right: 10px;
+            text-decoration: none;
+            color: white;
+            background-color: #3498db;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            background-color: #2980b9;
+        }
+        
+        .nav-links a.button {
+            background-color: #27ae60;
+        }
+        
+        .nav-links a.button:hover {
+            background-color: #219653;
+        }
+        
+        .show-list {
+            padding: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .show-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .show-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .show-card h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        
+        .show-card .details {
+            margin: 15px 0;
+            color: #7f8c8d;
+        }
+        
+        .book-btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #e74c3c;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        
+        .book-btn:hover {
+            background-color: #c0392b;
+        }
+        
+        .no-shows {
+            color: #7f8c8d;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to the Ticket Booking System</h1>
+    
+    <div class="nav-links">
+        <a href="{% url 'register' %}">Register</a>
+        <a href="{% url 'login' %}">Login</a>
+        <a href="{% url 'logout' %}">Logout</a>
+        <a href="{% url 'booking_history' %}" class="button">View My Bookings</a>
+    </div>
+
+    <h2>Available Shows</h2>
+
+    {% if shows %}  
+        <div class="show-list">
+            {% for show in shows %}
+                <div class="show-card">
+                    <h3>{{ show.title }}</h3>
+                    <div class="details">
+                        <p>Date & Time: {{ show.date_time }}</p>
+                        <p>Price: ₹{{ show.price }}</p>
+                    </div>
+                    <a href="{% url 'book_show' show.id %}" class="book-btn">Book Now</a>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="no-shows">No shows available at the moment. Please check back later.</p>
+    {% endif %}
+</body>
+</html>

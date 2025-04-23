@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Book {{ show.title }}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        
+        .show-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .show-info p {
+            margin: 5px 0;
+            color: #2c3e50;
+        }
+        
+        .error {
+            color: #e74c3c;
+            background: #fde8e8;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #e74c3c;
+        }
+        
+        form {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        fieldset {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        legend {
+            color: #2c3e50;
+            font-weight: bold;
+            padding: 0 10px;
+        }
+        
+        label {
+            display: block;
+            padding: 8px 0;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border-radius: 4px;
+            padding-left: 10px;
+        }
+        
+        label:hover {
+            background-color: #f0f7ff;
+        }
+        
+        input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+        
+        button[type="submit"] {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button[type="submit"]:hover {
+            background-color: #219653;
+        }
+        
+        .no-seats {
+            color: #7f8c8d;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <h1>Book Tickets for {{ show.title }}</h1>
+    
+    <div class="show-info">
+        <p><strong>Date & Time:</strong> {{ show.date_time }}</p>
+        <p><strong>Price per seat:</strong> ₹{{ show.price }}</p>
+    </div>
+
+    {% if error %}
+        <div class="error">{{ error }}</div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <fieldset>
+            <legend>Select Seats</legend>
+            {% for seat in seats %}
+                <label>
+                    <input type="checkbox" name="seats" value="{{ seat.id }}">
+                    Seat {{ seat.seat_number }}
+                </label>
+            {% empty %}
+                <p class="no-seats">Sorry, no seats available.</p>
+            {% endfor %}
+        </fieldset>
+        <button type="submit">Confirm Booking</button>
+    </form>
+</body>
+</html>
