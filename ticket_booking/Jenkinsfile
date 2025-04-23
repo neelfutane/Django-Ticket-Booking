@@ -1,0 +1,36 @@
+pipeline {
+    agent any
+
+    environment {
+        PROJECT_DIR = 'ticket_booking' 
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                echo '🔧 Building Docker containers...'
+                dir("${env.PROJECT_DIR}") {
+                    bat 'docker-compose build'
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo '✅ Running Django tests...'
+                dir("${env.PROJECT_DIR}") {
+                    bat 'docker-compose run web python manage.py test'
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo '🚀 Deploying the app using Docker Compose...'
+                dir("${env.PROJECT_DIR}") {
+                    bat 'docker-compose up -d'
+                }
+            }
+        }
+    }
+}
